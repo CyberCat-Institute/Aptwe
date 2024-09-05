@@ -49,8 +49,8 @@ parityCon (Lower p) y = parityCon p y
 
 structureCov : Structure xs ys -> IxAll Cov xs -> IxAll Cov ys
 structureCov Empty [] = []
-structureCov (Insert p i f) (x :: xs) 
-  = ixInsert i (parityCov p x) (structureCov f xs)
+structureCov (Insert p i f) xs
+  = parityCov p (ixUnsertL i xs) :: structureCov f (ixUnsertR i xs)
 structureCov (Delete f) (x :: xs) = structureCov f xs
 structureCov (Copy e f) xs = ixSelect e xs :: structureCov f xs
 structureCov (Spawn f) xs = spawnCov :: structureCov f xs
@@ -58,8 +58,8 @@ structureCov (Merge e f) (x :: xs) = structureCov f xs
 
 structureCon : Structure xs ys -> IxAll Con ys -> IxAll Con xs
 structureCon Empty [] = []
-structureCon (Insert p i f) ys
-  = parityCon p (ixUnsertL i ys) :: structureCon f (ixUnsertR i ys)
+structureCon (Insert p i f) (y :: ys)
+  = ixInsert i (parityCon p y) (structureCon f ys)
 structureCon (Delete f) ys = deleteCon :: structureCon f ys
 structureCon (Copy e f) (y :: ys) = structureCon f ys
 structureCon (Spawn f) (y :: ys) = structureCon f ys

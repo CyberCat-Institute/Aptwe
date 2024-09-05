@@ -37,7 +37,7 @@ data Structure : All Ty kas -> All Ty kbs -> Type where
   Empty  : Structure [] []
   -- Symmetry is broken here
   Insert : {a, b : Ty (cov, con)} -> {as : All Ty kas} -> {bs : All Ty kbs}
-        -> Parity a b -> IxInsertion b bs cs -> Structure as bs -> Structure (a :: as) cs
+        -> Parity a b -> IxInsertion a as as' -> Structure as bs -> Structure as' (b :: bs)
   Delete : {a : Ty (True, con)} -> Structure as bs -> Structure (a :: as) bs
   Copy   : {a : Ty (True, con)} -> {as : All Ty xs} 
         -> IxElem {xs = xs} a as -> Structure as bs -> Structure as (a :: bs)
