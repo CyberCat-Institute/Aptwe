@@ -2,6 +2,7 @@ module IxUtils
 
 import Data.List.Quantifiers
 
+public export
 data IxAll : (q : {x : a} -> p x -> Type) -> (ys : All p xs) -> Type where
   Nil : {q : {x : a} -> p x -> Type} 
      -> IxAll {p} {xs = []} q []

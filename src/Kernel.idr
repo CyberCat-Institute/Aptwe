@@ -3,17 +3,21 @@ module Kernel
 import Data.List.Quantifiers
 import IxUtils
 
+public export
 data And : Bool -> Bool -> Bool -> Type where
   True  : And True b b
   False : And False b False
 
+public export
 (&&) : (a : Bool) -> (b : Bool) -> (c : Bool ** And a b c)
 True  && b = (b ** True)
 False && b = (False ** False)
 
+public export
 Kind : Type
 Kind = (Bool, Bool)
 
+public export
 data Ty : Kind -> Type where
   Unit   : Ty (True, True)
   Ground : Ty (True, False)
@@ -22,11 +26,13 @@ data Ty : Kind -> Type where
         -> {default (covx && covy) cov : _} -> {default (conx && cony) con : _}
         -> Ty (covx, conx) -> Ty (covy, cony) -> Ty (cov.fst, con.fst)
 
+public export
 data Parity : Ty (cov, con) -> Ty (cov, con) -> Type where
   Id    : Parity a a
   Raise : Parity a b -> Parity a (Not (Not b))
   Lower : Parity a b -> Parity (Not (Not a)) b
 
+public export
 data Structure : All Ty kas -> All Ty kbs -> Type where
   Empty  : Structure [] []
   -- Symmetry is broken here
@@ -39,6 +45,7 @@ data Structure : All Ty kas -> All Ty kbs -> Type where
   Merge  : {b : Ty (cov, True)} -> {bs : All Ty ys} 
         -> IxElem {xs = ys} b bs -> Structure as bs -> Structure (b :: as) bs
 
+public export
 data Term : All Ty ks -> Ty k -> Type where
   Var : Term [x] x
   Rename : Structure as bs -> Term bs x -> Term as x
