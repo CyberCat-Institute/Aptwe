@@ -1,0 +1,10 @@
+[custom.all.Aptwe]
+type = "local"
+path = "."
+ipkg = "Aptwe.ipkg"
+test = "test/test.ipkg"
+
+[custom.all.Aptwe-test]
+type = "local"
+path = "test"
+ipkg = "test.ipkg"
