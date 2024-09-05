@@ -50,6 +50,7 @@ data Term : All Ty ks -> Ty k -> Type where
   Var : Term [x] x
   Rename : Structure as bs -> Term bs x -> Term as x
   UnitIntro : Term [] Unit
+  NotIntro : {a : Ty (True, con)} -> Term (a :: as) Unit -> Term as (Not a)
   UnitElim : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
           -> Term as Unit -> Term bs x -> Term (cs.snd.fst) x
   NotElim : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}

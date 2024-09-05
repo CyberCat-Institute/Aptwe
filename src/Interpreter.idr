@@ -4,16 +4,22 @@ import Data.List.Quantifiers
 import IxUtils
 import Kernel
 
+public export
+data Shadow : Type where
+  X : Shadow
+
 mutual
+  public export
   Cov : Ty k -> Type
   Cov Unit = Unit
   Cov Ground = Nat
   Cov (Not x) = Con x
   Cov (Tensor x y) = (Cov x, Cov y)
 
+  public export
   Con : Ty k -> Type
   Con Unit = Unit
-  Con Ground = Unit
+  Con Ground = Shadow
   Con (Not x) = Cov x
   Con (Tensor x y) = (Con x, Con y)
 
@@ -26,7 +32,7 @@ mutual
 
   deleteCon : {x : Ty (True, con)} -> Con x
   deleteCon {x = Unit} = ()
-  deleteCon {x = Ground} = ()
+  deleteCon {x = Ground} = X
   deleteCon {x = Not x} = spawnCov
   deleteCon {x = Tensor {cov = (True ** and)} x y} with (and)
     deleteCon {x = Tensor {cov = (True ** and)} x y} | True = (deleteCon, deleteCon)
@@ -59,11 +65,16 @@ structureCon (Copy e f) (y :: ys) = structureCon f ys
 structureCon (Spawn f) (y :: ys) = structureCon f ys
 structureCon (Merge e f) ys = ixSelect e ys :: structureCon f ys
 
+public export
 eval : Term xs y -> IxAll Cov xs -> (Cov y, Con y -> IxAll Con xs)
 eval Var [x] = (x, \y' => [y'])
 eval (Rename f t) xs = let (y, k) = eval t (structureCov f xs)
                         in (y, \y' => structureCon f (k y'))
 eval UnitIntro [] = ((), \() => [])
+eval (NotIntro t) xs 
+  = (deleteCon, \x' => let ((), k) = eval t (x' :: xs)
+                           y' :: ys = k ()
+                        in ys)
 eval (UnitElim {cs = (_ ** _ ** s)} t1 t2) xs 
   = let ((), k1) = eval t1 (ixUncatL s xs)
         (y, k2) = eval t2 (ixUncatR s xs)
