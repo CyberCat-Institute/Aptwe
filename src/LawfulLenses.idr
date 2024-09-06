@@ -10,7 +10,7 @@ prjl : {a, a', b : Ty (True, False)}
 prjl = TensorElim Var 
      $ TensorElim Var 
      $ TensorIntro Var 
-     $ NotIntro
+     $ NotIntroCov
      $ Rename (Insert Id (S (S Z)) $ Insert Id Z $ Insert Id Z $ Empty)
      $ NotElim Var
      $ TensorIntro Var Var
@@ -22,7 +22,7 @@ prjr = TensorElim Var
      $ TensorElim Var
      $ Rename (Insert Id (S Z) $ Insert Id (S Z) $ Insert Id Z $ Empty)
      $ TensorIntro Var
-     $ NotIntro
+     $ NotIntroCov
      $ Rename (Insert Id (S Z) $ Insert Id (S Z) $ Insert Id Z $ Empty)
      $ NotElim Var
      $ TensorIntro Var Var

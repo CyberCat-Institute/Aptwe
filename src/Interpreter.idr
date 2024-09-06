@@ -71,14 +71,18 @@ eval Var [x] = (x, \y' => [y'])
 eval (Rename f t) xs = let (y, k) = eval t (structureCov f xs)
                         in (y, \y' => structureCon f (k y'))
 eval UnitIntro [] = ((), \() => [])
-eval (NotIntro t) xs 
-  = (deleteCon, \x' => let ((), k) = eval t (x' :: xs)
-                           y' :: ys = k ()
-                        in ys)
 eval (UnitElim {cs = (_ ** _ ** s)} t1 t2) xs 
   = let ((), k1) = eval t1 (ixUncatL s xs)
         (y, k2) = eval t2 (ixUncatR s xs)
      in (y, \y' => ixConcat s (k1 ()) (k2 y'))
+eval (NotIntroCov t) xs 
+  = (deleteCon, \x' => let ((), k) = eval t (x' :: xs)
+                           y' :: ys = k ()
+                        in ys)
+eval (NotIntroCon t) xs 
+  = let ((), k) = eval t (spawnCov :: xs) 
+        y :: ys = k ()
+     in (y, \y' => ys)
 eval (NotElim {cs = (_ ** _ ** s)} t1 t2) xs 
   = let (y1, k1) = eval t1 (ixUncatL s xs)
         (y2, k2) = eval t2 (ixUncatR s xs)
