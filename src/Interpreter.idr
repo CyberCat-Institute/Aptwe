@@ -1,41 +1,77 @@
 module Interpreter
 
+import Data.List.Elem
 import Data.List.Quantifiers
 import IxUtils
 import Kernel
+
+-- what standard library is this in?
+lookup : Elem x xs -> All p xs -> p x
+lookup Here (x :: xs) = x
+lookup (There n) (x :: xs) = lookup n xs
 
 public export
 data Shadow : Type where
   X : Shadow
 
+public export
+BaseCov : BaseTy con -> Type
+BaseCov Nat = Nat
+
 mutual
   public export
   Cov : Ty k -> Type
   Cov Unit = Unit
-  Cov Ground = Nat
+  Cov (Base x) = BaseCov x
   Cov (Not x) = Con x
   Cov (Tensor x y) = (Cov x, Cov y)
 
   public export
   Con : Ty k -> Type
   Con Unit = Unit
-  Con Ground = Shadow
+  Con (Base x) = Shadow
   Con (Not x) = Cov x
   Con (Tensor x y) = (Con x, Con y)
+
+unit : {x : BaseTy True} -> Cov (Base x)
+unit impossible
+
+multiply : {x : BaseTy True} -> Cov (Base x) -> Cov (Base x) -> Cov (Base x)
+multiply impossible
 
 mutual
   spawnCov : {x : Ty (cov, True)} -> Cov x
   spawnCov {x = Unit} = ()
+  spawnCov {x = Base x} = unit
   spawnCov {x = Not x} = deleteCon
   spawnCov {x = Tensor {con = (True ** and)} x y} with (and)
-    spawnCov {x = Tensor {con = (True ** and)} x y} | True = (spawnCov, spawnCov)
+    spawnCov {x = Tensor {con = (True ** and)} x y} | True 
+      = (spawnCov, spawnCov)
 
   deleteCon : {x : Ty (True, con)} -> Con x
   deleteCon {x = Unit} = ()
-  deleteCon {x = Ground} = X
+  deleteCon {x = Base x} = X
   deleteCon {x = Not x} = spawnCov
   deleteCon {x = Tensor {cov = (True ** and)} x y} with (and)
-    deleteCon {x = Tensor {cov = (True ** and)} x y} | True = (deleteCon, deleteCon)
+    deleteCon {x = Tensor {cov = (True ** and)} x y} | True 
+      = (deleteCon, deleteCon)
+
+mutual
+  mergeCov : {0 cov : Bool} -> {x : Ty (cov, True)} -> Cov x -> Cov x -> Cov x
+  mergeCov {x = Unit} () () = ()
+  mergeCov {x = Base x} p q = multiply p q
+  mergeCov {x = Not x} p q = copyCon p q
+  mergeCov {x = Tensor {con = (True ** and)} x y} (p, p') (q, q') with (and)
+    mergeCov {x = Tensor {con = (True ** and)} x y} (p, p') (q, q') | True
+      = (mergeCov p q, mergeCov p' q')
+
+  copyCon : {0 con : Bool} -> {x : Ty (True, con)} -> Con x -> Con x -> Con x
+  copyCon {x = Unit} () () = ()
+  copyCon {x = Base x} X X = X
+  copyCon {x = Not x} p q = mergeCov p q
+  copyCon {x = Tensor {cov = (True ** and)} x y} (p, p') (q, q') with (and)
+    copyCon {x = Tensor {cov = (True ** and)} x y} (p, p') (q, q') | True
+      = (copyCon p q, copyCon p' q')
 
 parityCov : Parity x y -> Cov x -> Cov y
 parityCov Id x = x
@@ -47,6 +83,12 @@ parityCon Id y = y
 parityCon (Raise p) y = parityCon p y
 parityCon (Lower p) y = parityCon p y
 
+applyAt : {0 p : a -> Type} -> {y : p x} -> {ys : All p xs}
+       -> {0 q : {x : a} -> p x -> Type}
+       -> IxElem y ys -> (q y -> q y) -> IxAll q ys -> IxAll q ys
+applyAt Z f (x :: xs) = f x :: xs
+applyAt (S n) f (x :: xs) = x :: applyAt n f xs
+
 structureCov : Structure xs ys -> IxAll Cov xs -> IxAll Cov ys
 structureCov Empty [] = []
 structureCov (Insert p i f) xs
@@ -54,14 +96,14 @@ structureCov (Insert p i f) xs
 structureCov (Delete f) (x :: xs) = structureCov f xs
 structureCov (Copy e f) xs = ixSelect e xs :: structureCov f xs
 structureCov (Spawn f) xs = spawnCov :: structureCov f xs
-structureCov (Merge e f) (x :: xs) = structureCov f xs
+structureCov (Merge e f) (x :: xs) = applyAt e (mergeCov x) (structureCov f xs)
 
 structureCon : Structure xs ys -> IxAll Con ys -> IxAll Con xs
 structureCon Empty [] = []
 structureCon (Insert p i f) (y :: ys)
   = ixInsert i (parityCon p y) (structureCon f ys)
 structureCon (Delete f) ys = deleteCon :: structureCon f ys
-structureCon (Copy e f) (y :: ys) = structureCon f ys
+structureCon (Copy e f) (y :: ys) = applyAt e (copyCon y) (structureCon f ys)
 structureCon (Spawn f) (y :: ys) = structureCon f ys
 structureCon (Merge e f) ys = ixSelect e ys :: structureCon f ys
 

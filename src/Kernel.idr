@@ -1,5 +1,6 @@
 module Kernel
 
+import Data.List.Elem
 import Data.List.Quantifiers
 import IxUtils
 
@@ -18,9 +19,13 @@ Kind : Type
 Kind = (Bool, Bool)
 
 public export
+data BaseTy : Bool -> Type where
+  Nat : BaseTy False
+
+public export
 data Ty : Kind -> Type where
   Unit   : Ty (True, True)
-  Ground : Ty (True, False)
+  Base   : BaseTy con -> Ty (True, con)
   Not    : Ty (cov, con) -> Ty (con, cov)
   Tensor : {covx, covy, conx, cony : Bool}
         -> {default (covx && covy) cov : _} -> {default (conx && cony) con : _}
