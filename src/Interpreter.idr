@@ -11,12 +11,13 @@ lookup Here (x :: xs) = x
 lookup (There n) (x :: xs) = lookup n xs
 
 public export
-data Shadow : Type where
-  X : Shadow
+data Echo : Type where
+  X : Echo
 
 public export
 BaseCov : BaseTy con -> Type
 BaseCov Nat = Nat
+BaseCov Real = Double
 
 mutual
   public export
@@ -29,15 +30,15 @@ mutual
   public export
   Con : Ty k -> Type
   Con Unit = Unit
-  Con (Base x) = Shadow
+  Con (Base x) = Echo
   Con (Not x) = Cov x
   Con (Tensor x y) = (Con x, Con y)
 
 unit : {x : BaseTy True} -> Cov (Base x)
-unit impossible
+unit {x = Real} = 0
 
 multiply : {x : BaseTy True} -> Cov (Base x) -> Cov (Base x) -> Cov (Base x)
-multiply impossible
+multiply {x = Real} p q = p + q
 
 mutual
   spawnCov : {x : Ty (cov, True)} -> Cov x
@@ -112,6 +113,11 @@ eval : Term xs y -> IxAll Cov xs -> (Cov y, Con y -> IxAll Con xs)
 eval Var [x] = (x, \y' => [y'])
 eval (Rename f t) xs = let (y, k) = eval t (structureCov f xs)
                         in (y, \y' => structureCon f (k y'))
+eval (Let {cs = (_ ** _ ** s)} t1 t2) xs
+  = let (y, k1) = eval t1 (ixUncatL s xs)
+        (z, k2) = eval t2 (y :: ixUncatR s xs)
+     in (z, \z' => let y' :: ys' = k2 z'
+                    in ixConcat s (k1 y') ys')
 eval UnitIntro [] = ((), \() => [])
 eval (UnitElim {cs = (_ ** _ ** s)} t1 t2) xs 
   = let ((), k1) = eval t1 (ixUncatL s xs)

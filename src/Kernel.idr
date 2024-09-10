@@ -21,6 +21,7 @@ Kind = (Bool, Bool)
 public export
 data BaseTy : Bool -> Type where
   Nat : BaseTy False
+  Real : BaseTy True
 
 public export
 data Ty : Kind -> Type where
@@ -45,15 +46,17 @@ data Structure : All Ty kas -> All Ty kbs -> Type where
         -> Parity a b -> IxInsertion a as as' -> Structure as bs -> Structure as' (b :: bs)
   Delete : {a : Ty (True, con)} -> Structure as bs -> Structure (a :: as) bs
   Copy   : {a : Ty (True, con)} -> {as : All Ty xs} 
-        -> IxElem {xs = xs} a as -> Structure as bs -> Structure as (a :: bs)
+        -> IxElem a as -> Structure as bs -> Structure as (a :: bs)
   Spawn  : {b : Ty (cov, True)} -> Structure as bs -> Structure as (b :: bs)
   Merge  : {b : Ty (cov, True)} -> {bs : All Ty ys} 
-        -> IxElem {xs = ys} b bs -> Structure as bs -> Structure (b :: as) bs
+        -> IxElem b bs -> Structure as bs -> Structure (b :: as) bs
 
 public export
 data Term : All Ty ks -> Ty k -> Type where
   Var : Term [x] x
   Rename : Structure as bs -> Term bs x -> Term as x
+  Let : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
+     -> Term as x -> Term (x :: bs) y -> Term cs.snd.fst y
   UnitIntro : Term [] Unit
   UnitElim : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
           -> Term as Unit -> Term bs x -> Term (cs.snd.fst) x
