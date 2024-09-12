@@ -1,8 +1,10 @@
-module LawfulLenses
+module Examples.LawfulLenses
 
 import Data.List.Quantifiers
 import IxUtils
-import Kernel
+import Kernel.Kinds
+import Kernel.Types
+import Kernel.Terms
 
 public export
 prjl : {a, a', b : Ty (True, False)} 
