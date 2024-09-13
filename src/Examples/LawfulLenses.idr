@@ -4,6 +4,7 @@ import Data.List.Quantifiers
 import IxUtils
 import Kernel.Kinds
 import Kernel.Types
+import Kernel.Structure
 import Kernel.Terms
 
 public export
