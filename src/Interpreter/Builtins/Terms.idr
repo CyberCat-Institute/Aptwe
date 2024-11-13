@@ -9,7 +9,7 @@ import Builtins.Terms
 import Interpreter.Builtins.Types
 import Interpreter.Types
 
-public export
+public export total
 evalBaseTerm : BaseTerm xs y -> IxAll Cov xs -> (Cov y, Con y -> IxAll Con xs)
 evalBaseTerm BoolAnd [p, q] = (p && q, \X => [X, X])
 evalBaseTerm BoolOr [p, q] = (p || q, \X => [X, X])

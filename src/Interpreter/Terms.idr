@@ -13,7 +13,7 @@ import Interpreter.Types
 import Interpreter.Builtins.Terms
 import Interpreter.Structure
 
-public export
+public export total
 eval : Term xs y -> IxAll Cov xs -> (Cov y, Con y -> IxAll Con xs)
 eval (BaseTerm t) xs = evalBaseTerm t xs
 eval Var [x] = (x, \y' => [y'])
