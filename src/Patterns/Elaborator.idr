@@ -22,6 +22,7 @@ elaborator (BaseTerm x) = BaseTerm x
 elaborator (Rename s t) = Rename s (elaborator t)
 elaborator (Let {xzs, yzs} t1 p t2) = Let {cs = xzs} (elaborator t1) (act (yzs.snd.snd) p (elaborator t2))
 elaborator Unit = UnitIntro
-elaborator (Contradiction x y) = ?fixme
+elaborator (ContradictionCov {xys} p t) = NotIntroCov (act (xys.snd.snd) p (elaborator t))
+elaborator (ContradictionCon {xys} p t) = NotIntroCon (act (xys.snd.snd) p (elaborator t))
 elaborator (Explosion {cs} t1 t2) = NotElim {cs} (elaborator t1) (elaborator t2)
 elaborator (Tensor {cs} t1 t2) = TensorIntro {cs} (elaborator t1) (elaborator t2)
