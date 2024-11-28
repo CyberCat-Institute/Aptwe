@@ -17,6 +17,7 @@ mutual
   Cov (Not x) = Con x
   Cov (Tensor x y) = (Cov x, Cov y)
   Cov (Hom x y) = Cov x -> (Cov y, Con y -> Con x)
+  Cov (Par x y) = Either (Cov x) (Cov y)
 
   public export total
   Con : Ty k -> Type
@@ -25,3 +26,4 @@ mutual
   Con (Not x) = Cov x
   Con (Tensor x y) = (Con x, Con y)
   Con (Hom x y) = (Cov x, Con y)
+  Con (Par x y) = (Cov x -> Con x, Cov y -> Con y)

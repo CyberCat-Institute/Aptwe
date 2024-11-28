@@ -61,3 +61,21 @@ eval (HomElim {cs = (_ ** _ ** s)} t1 t2) xs
         (x, k2) = eval t2 (ixUncatR s xs)
         (y, k3) = f x
      in (y, \y' => ixConcat s (k1 (x, y')) (k2 (k3 y')))
+eval (ParIntroL t) xs
+  = let (y, k) = eval t xs
+     in (Left y, \(f, _) => k (f y))
+eval (ParIntroR t) xs
+  = let (y, k) = eval t xs
+     in (Right y, \(_, f) => k (f y))
+eval (ParElim {cs = (_ ** _ ** s)} t1 t2 t3) xs
+  = case eval t1 (ixUncatL s xs) of
+      (Left x, k1) => let (z, k2) = eval t2 (x :: ixUncatR s xs)
+                       in (z, \z' => let x' :: xs' = k2 z'
+                                         f = \y => let (_, k3) = eval t3 (y :: ixUncatR s xs)
+                                                    in k3 z'
+                                      in ixConcat s (k1 (const x', f)) xs')
+      (Right y, k1) => let (z, k2) = eval t3 (y :: ixUncatR s xs)
+                        in (z, \z' => let y' :: xs' = k2 z'
+                                          f = \x => let (_, k3) = eval t2 (x :: ixUncatR s xs)
+                                                     in k3 z'
+                                       in ixConcat s (k1 (f, const y')) xs')

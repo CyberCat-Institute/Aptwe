@@ -31,3 +31,7 @@ data Term : All Ty ks -> Ty k -> Type where
   HomIntro : Term (x :: xs) y -> Term xs (Hom x y)
   HomElim : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
          -> Term as (Hom x y) -> Term bs x -> Term (cs.snd.fst) y
+  ParIntroL : Term as x -> Term as (Par x y)
+  ParIntroR : Term as y -> Term as (Par x y)
+  ParElim : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
+         -> Term as (Par x y) -> Term (x :: bs) z -> Term (y :: bs) z -> Term (cs.snd.fst) z
