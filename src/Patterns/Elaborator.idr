@@ -26,3 +26,5 @@ elaborator (ContradictionCov {xys} p t) = NotIntroCov (act (xys.snd.snd) p (elab
 elaborator (ContradictionCon {xys} p t) = NotIntroCon (act (xys.snd.snd) p (elaborator t))
 elaborator (Explosion {cs} t1 t2) = NotElim {cs} (elaborator t1) (elaborator t2)
 elaborator (Tensor {cs} t1 t2) = TensorIntro {cs} (elaborator t1) (elaborator t2)
+elaborator (Lambda {cs} p t) = HomIntro (act (cs.snd.snd) p (elaborator t))
+elaborator (App {cs} t1 t2) = HomElim {cs} (elaborator t1) (elaborator t2)
