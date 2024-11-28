@@ -6,7 +6,7 @@ data And : Bool -> Bool -> Bool -> Type where
   False : And False b False
 
 public export total
-(&&) : (a : Bool) -> (b : Bool) -> (c : Bool ** And a b c)
+(&&) : (a, b : Bool) -> (c : Bool ** And a b c)
 True  && b = (b ** True)
 False && b = (False ** False)
 

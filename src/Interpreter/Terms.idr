@@ -50,3 +50,14 @@ eval (TensorElim {cs = (_ ** _ ** s)} t1 t2) xs
         (y2, k2) = eval t2 (y1 :: y2 :: (ixUncatR s xs))
      in (y2, \y' => let x1' :: x2' :: xs' = k2 y'
                      in ixConcat s (k1 (x1', x2')) xs')
+eval (HomIntro t) xs = (\x => let (y, k) = eval t (x :: xs)
+                               in (y, \y' => let x' :: _ = k y'
+                                              in x'),
+                        \(x, y') => let (y, k) = eval t (x :: xs)
+                                        _ :: xs' = k y'
+                                     in xs')
+eval (HomElim {cs = (_ ** _ ** s)} t1 t2) xs 
+  = let (f, k1) = eval t1 (ixUncatL s xs)
+        (x, k2) = eval t2 (ixUncatR s xs)
+        (y, k3) = f x
+     in (y, \y' => ixConcat s (k1 (x, y')) (k2 (k3 y')))

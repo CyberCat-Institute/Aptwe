@@ -28,3 +28,6 @@ data Term : All Ty ks -> Ty k -> Type where
              -> Term as x -> Term bs y -> Term (cs.snd.fst) (Tensor x y)
   TensorElim : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
             -> Term as (Tensor x y) -> Term (x :: y :: bs) z -> Term (cs.snd.fst) z
+  HomIntro : Term (x :: xs) y -> Term xs (Hom x y)
+  HomElim : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
+         -> Term as (Hom x y) -> Term bs x -> Term (cs.snd.fst) y
