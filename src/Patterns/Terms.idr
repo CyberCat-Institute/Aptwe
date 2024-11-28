@@ -28,5 +28,10 @@ data Term : All Ty ks -> Ty k -> Type where
                   -> Pattern a xs -> Term (xys.snd.fst) Unit -> Term ys (Not a)
   Explosion : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
            -> Term as (Not x) -> Term bs x -> Term (cs.snd.fst) Unit
-  Tensor : {kas, kbs : _} -> {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
+  Tensor : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
         -> Term as x -> Term bs y -> Term (cs.snd.fst) (Tensor x y)
+  Lambda : {kas, kbs : List Kind}
+        -> {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
+        -> Pattern x as -> Term (cs.snd.fst) y -> Term bs (Hom x y)
+  App : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
+     -> Term as (Hom x y) -> Term bs x -> Term (cs.snd.fst) y
