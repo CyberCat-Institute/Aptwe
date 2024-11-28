@@ -12,3 +12,6 @@ data Ty : Kind -> Type where
   Tensor : {covx, covy, conx, cony : Bool}
         -> {default (covx && covy) cov : _} -> {default (conx && cony) con : _}
         -> Ty (covx, conx) -> Ty (covy, cony) -> Ty (cov.fst, con.fst)
+  Hom    : {covx, covy, conx, cony : Bool}
+        -> {default (conx && covy) cov : _} -> {default (covx && cony) con : _}
+        -> Ty (covx, conx) -> Ty (covy, cony) -> Ty (cov.fst, con.fst)
