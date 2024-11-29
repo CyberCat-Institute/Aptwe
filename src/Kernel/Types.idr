@@ -15,5 +15,5 @@ data Ty : Kind -> Type where
   Hom    : {covx, covy, conx, cony : Bool}
         -> {default (conx && covy) cov : _} -> {default (covx && cony) con : _}
         -> Ty (covx, conx) -> Ty (covy, cony) -> Ty (cov.fst, con.fst)
-  Par : {covx, covy, conx, cony, cov, con : Bool}
-     -> Ty (covx, conx) -> Ty (covy, cony) -> Ty (cov, con)
+  Par    : {covx, covy, conx, cony : Bool} -> {default (covx && covy) cov : _}
+        -> Ty (covx, conx) -> Ty (covy, cony) -> Ty (cov.fst, False)
