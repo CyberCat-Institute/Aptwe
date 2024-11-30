@@ -12,4 +12,9 @@ data Pattern : {k : Kind} -> {ks : List Kind} -> Ty k -> All Ty ks -> Type where
   Pair : {covx, conx, covy, cony : Bool}
       -> {x : Ty (covx, conx)} -> {y : Ty (covy, cony)}
       -> Pattern (Tensor x y) [x, y]
-  
+  Left : {covx, conx, covy, cony : Bool}
+      -> {x : Ty (covx, conx)} -> {y : Ty (covy, cony)}
+      -> Pattern (Par x y) [x]
+  Right : {covx, conx, covy, cony : Bool}
+       -> {x : Ty (covx, conx)} -> {y : Ty (covy, cony)}
+       -> Pattern (Par x y) [y]

@@ -35,3 +35,6 @@ data Term : All Ty ks -> Ty k -> Type where
         -> Pattern x as -> Term (cs.snd.fst) y -> Term bs (Hom x y)
   App : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
      -> Term as (Hom x y) -> Term bs x -> Term (cs.snd.fst) y
+  Inl : Term as x -> Term as (Par x y)
+  Inr : Term as y -> Term as (Par x y)
+  

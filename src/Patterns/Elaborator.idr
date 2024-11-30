@@ -15,7 +15,10 @@ act : {kys : List Kind} -> {xs : All Ty kxs} -> {ys : All Ty kys} -> IxSimplex x
 act (S Z) Var t = t
 act Z Unit t = UnitElim Var t 
 act (S (S Z)) Pair t = TensorElim Var t 
+act (S Z) Left t = ?one
+act (S Z) Right t = ?two
 
+public export total
 elaborator : Patterns.Terms.Term xs a -> Kernel.Terms.Term xs a
 elaborator Var = Var
 elaborator (BaseTerm x) = BaseTerm x
@@ -28,3 +31,5 @@ elaborator (Explosion {cs} t1 t2) = NotElim {cs} (elaborator t1) (elaborator t2)
 elaborator (Tensor {cs} t1 t2) = TensorIntro {cs} (elaborator t1) (elaborator t2)
 elaborator (Lambda {cs} p t) = HomIntro (act (cs.snd.snd) p (elaborator t))
 elaborator (App {cs} t1 t2) = HomElim {cs} (elaborator t1) (elaborator t2)
+elaborator (Inl t) = ParIntroL (elaborator t)
+elaborator (Inr t) = ParIntroR (elaborator t)
