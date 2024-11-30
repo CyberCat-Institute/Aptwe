@@ -35,3 +35,6 @@ data Term : All Ty ks -> Ty k -> Type where
   ParIntroR : Term as y -> Term as (Par x y)
   ParElim : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
          -> Term as (Par x y) -> Term (x :: bs) z -> Term (y :: bs) z -> Term (cs.snd.fst) z
+  BangIntro : Term as x -> Term as (Bang x)
+  BangElim : {as : All Ty kas} -> {bs : All Ty kbs} -> {default (ixSimplex as bs) cs : _}
+          -> Term as (Bang x) -> Term (x :: bs) (Bang y) -> Term (cs.snd.fst) (Bang y)

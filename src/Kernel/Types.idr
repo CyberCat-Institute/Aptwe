@@ -25,3 +25,4 @@ data Ty : Kind -> Type where
   -- Par x y is never contravariant
   Par    : {covx, covy, conx, cony : Bool} -> {default (covx && covy) cov : _}
         -> Ty (covx, conx) -> Ty (covy, cony) -> Ty (cov.fst, False)
+  Bang   :  Ty (cov, con) -> Ty (cov, con)

@@ -79,3 +79,13 @@ eval (ParElim {cs = (_ ** _ ** s)} t1 t2 t3) xs
                                           f = \x => let (_, k3) = eval t2 (x :: ixUncatR s xs)
                                                      in k3 z'
                                        in ixConcat s (k1 (f, const y')) xs')
+eval (BangIntro t) xs 
+  = let (y, k) = eval t xs
+     in (y, \f => k (f y))
+eval (BangElim {cs = (_ ** _ ** s)} t1 t2) xs
+  = let (x, k1) = eval t1 (ixUncatL s xs)
+        (y, k2) = eval t2 (x :: ixUncatR s xs)
+     in (y, \f => let x' :: ys' = k2 f
+                      xs' = k1 (const x')
+                   in ixConcat s xs' ys')
+  

@@ -32,6 +32,7 @@ mutual
   spawnCov {x = Hom {con = (True ** and)} x y} with (and)
     spawnCov {x = Hom {con = (True ** and)} x y} | True
       = const (spawnCov, const deleteCon)
+  spawnCov {x = Bang x} = spawnCov
 
   public export total
   deleteCon : {x : Ty (True, con)} -> Con x
@@ -47,6 +48,7 @@ mutual
   deleteCon {x = Par {cov = (True ** and)} x y} with (and)
     deleteCon {x = Par {cov = (True ** and)} x y} | True
       = (const deleteCon, const deleteCon)
+  deleteCon {x = Bang x} = \_ => deleteCon
 
 mutual
   public export total
@@ -62,6 +64,7 @@ mutual
       = \x => let (y1, k1) = p x
                   (y2, k2) = q x
                in (mergeCov y1 y2, \y' => copyCon (k1 y') (k2 y'))
+  mergeCov {x = Bang x} p q = mergeCov p q
 
   public export total
   copyCon : {0 con : Bool} -> {x : Ty (True, con)} -> Con x -> Con x -> Con x
@@ -77,6 +80,7 @@ mutual
   copyCon {x = Par {cov = (True ** and)} x y} p q with (and)
     copyCon {x = Par {cov = (True ** and)} x y} (p1, p2) (q1, q2) | True
       = (\x => copyCon (p1 x) (q1 x), \y => copyCon (p2 y) (q2 y))
+  copyCon {x = Bang x} p q = \x => copyCon (p x) (q x)
 
 public export total
 parityCov : Parity x y -> Cov x -> Cov y
