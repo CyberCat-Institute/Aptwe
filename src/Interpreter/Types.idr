@@ -10,16 +10,18 @@ data Echo : Type where
   X : Echo
 
 mutual
-  public export
+  public export total
   Cov : Ty k -> Type
   Cov Unit = Unit
   Cov (BaseTy x) = EvalBaseTy x
   Cov (Not x) = Con x
   Cov (Tensor x y) = (Cov x, Cov y)
+  Cov (Hom x y) = Cov x -> (Cov y, Con y -> Con x)
 
-  public export
+  public export total
   Con : Ty k -> Type
   Con Unit = Unit
   Con (BaseTy x) = Echo
   Con (Not x) = Cov x
   Con (Tensor x y) = (Con x, Con y)
+  Con (Hom x y) = (Cov x, Con y)

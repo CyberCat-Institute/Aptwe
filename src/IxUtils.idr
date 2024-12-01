@@ -16,7 +16,7 @@ namespace IxElem
     S : IxElem {x} a {xs} bs 
      -> IxElem {x = x} a {xs = x :: xs} (b :: bs)
 
-public export
+public export total
 ixSelect : {0 q : {0 x : a} -> p x -> Type} 
         -> IxElem y ys -> IxAll {p} {xs} q ys -> q y
 ixSelect Z (y :: ys) = y
@@ -31,7 +31,7 @@ namespace IxInsertion
     S : IxInsertion {x} a {xs} as {ys} bs 
      -> IxInsertion {x = x} a {xs = y :: xs} (b :: as) {ys = y :: ys} (b :: bs)
 
-public export
+public export total
 ixInsert : {0 p : a -> Type} -> {0 x : a} -> {0 y : p x}
         -> {0 xs : List a} -> {0 ys : All p xs}
         -> {0 xs' : List a} -> {0 ys' : All p xs'}
@@ -40,7 +40,7 @@ ixInsert : {0 p : a -> Type} -> {0 x : a} -> {0 y : p x}
 ixInsert Z y ys = y :: ys
 ixInsert (S n) y (y' :: ys) = y' :: ixInsert n y ys
 
-public export
+public export total
 ixUnsertL : {0 p : a -> Type} -> {0 x : a} -> {0 y : p x}
          -> {0 xs : List a} -> {0 ys : All p xs}
          -> {0 xs' : List a} -> {0 ys' : All p xs'}
@@ -49,7 +49,7 @@ ixUnsertL : {0 p : a -> Type} -> {0 x : a} -> {0 y : p x}
 ixUnsertL Z (y :: ys) = y
 ixUnsertL (S n) (y :: ys) = ixUnsertL n ys
 
-public export
+public export total
 ixUnsertR : {0 p : a -> Type} -> {0 x : a} -> {0 y : p x}
          -> {0 xs : List a} -> {0 ys : All p xs}
          -> {0 xs' : List a} -> {0 ys' : All p xs'}
@@ -67,7 +67,7 @@ namespace IxSimplex
     S : IxSimplex {xs} as {ys} bs {zs} cs 
      -> IxSimplex {xs = x :: xs} (a :: as) {ys = ys} bs {zs = x :: zs} (a :: cs)
 
-public export
+public export total
 ixSimplex : {xs : List a} -> (as : All p xs)
          -> {ys : List a} -> (bs : All p ys)
          -> (zs : List a ** cs : All p zs ** IxSimplex as bs cs)
@@ -76,21 +76,21 @@ ixSimplex {xs = x :: xs} (a :: as) {ys} bs
   = let (zs ** cs ** n) = ixSimplex {xs = xs} as {ys = ys} bs 
       in (x :: zs ** a :: cs ** S n)
 
-public export
+public export total
 ixConcat : {0 p : a -> Type} -> {0 as : All p xs} -> {0 bs : All p ys} -> {0 cs : All p zs}
         -> {0 q : {0 x : a} -> p x -> Type}
         -> IxSimplex as bs cs -> IxAll q as -> IxAll q bs -> IxAll q cs
 ixConcat Z [] ys = ys
 ixConcat (S n) (x :: xs) ys = x :: ixConcat n xs ys
 
-public export
+public export total
 ixUncatL : {0 p : a -> Type} -> {0 as : All p xs} -> {0 bs : All p ys} -> {0 cs : All p zs} 
         -> {0 q : {0 x : a} -> p x -> Type}
         -> IxSimplex as bs cs -> IxAll q cs -> IxAll q as
 ixUncatL Z zs = []
 ixUncatL (S n) (z :: zs) = z :: (ixUncatL n zs)
 
-public export
+public export total
 ixUncatR : {0 p : a -> Type} -> {0 as : All p xs} -> {0 bs : All p ys} -> {0 cs : All p zs}
         -> {0 q : {0 x : a} -> p x -> Type}
         -> IxSimplex as bs cs -> IxAll q cs -> IxAll q bs
