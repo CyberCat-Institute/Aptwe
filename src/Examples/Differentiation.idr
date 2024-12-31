@@ -33,7 +33,7 @@ diff f df = TensorElim Var
           $ Rename (Copy Z $ Insert Id Z $ Insert Id Z $ Empty)
           $ TensorIntro f
           $ NotIntroCov
-          $ Rename (Insert Id (S (S Z)) $ Insert Id Z $ Insert Id Z $ Empty)
+          $ Rename (Insert Id (S (S Z)) $ Insert Id (S Z) $ Insert Id Z $ Empty)
           $ NotElim Var
           $ Let df
           $ times
