@@ -63,12 +63,6 @@ example = Rename (Copy Z $ Insert Id Z $ Empty)
         $ Let (Let dsquare dsin)
         $ dtimes
 
-public export
-test : Double -> (Double, Double -> Double)
-test x = let ((y, X), k) = eval example [(x, X)]
-          in (y, \dy => let [(X, dx)] = k (X, dy) 
-                         in dx)
-
 dtest : Term [Mono (BaseTy Real)] (Mono (BaseTy Real)) -> Double -> (Double, Double -> Double)
 dtest t x = let ((y, X), k) = eval t [(x, X)]
              in (y, \dy => let [(X, dx)] = k (X, dy)
